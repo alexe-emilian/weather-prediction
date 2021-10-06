@@ -1,0 +1,4 @@
+weather:
+    path: /weather
+    controller: App\Controller\Api\GetWeatherAction::get
+    stateless: true

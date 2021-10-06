@@ -1,0 +1,69 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+skinparam linetype ortho
+
+class GetWeatherAction
+GetWeatherAction : get(city, date, scale)
+
+note top of GetWeatherAction : Controller used for the weather endpoint
+
+class WeatherPrediction
+WeatherPrediction : getData(city, date, scale)
+
+note top of WeatherPrediction : Service that calculates weather predictions using multiple partner sources
+
+GetWeatherAction --> WeatherPrediction
+
+class CsvPartner
+CsvPartner : getPredictions(city, date, scale)
+
+class JsonPartner
+JsonPartner : getPredictions(city, date, scale)
+
+class XmlPartner
+XmlPartner : getPredictions(city, date, scale)
+
+WeatherPrediction --> CsvPartner
+WeatherPrediction --> JsonPartner
+WeatherPrediction --> XmlPartner
+
+class PartnerDataCache
+PartnerDataCache : getData(key)
+PartnerDataCache : setData(key)
+
+note top of PartnerDataCache : Wrapper for the cache that provides the base functionality needed in our flows
+
+CsvPartner --> PartnerDataCache
+JsonPartner --> PartnerDataCache
+XmlPartner --> PartnerDataCache
+
+class TemperatureScaleConverter
+TemperatureScaleConverter : convert(value, sourceScale, targetScale)
+
+note top of TemperatureScaleConverter : Service that converts temperatures to the indicated scale
+
+CsvPartner --> TemperatureScaleConverter
+JsonPartner --> TemperatureScaleConverter
+XmlPartner --> TemperatureScaleConverter
+
+class Weather
+Weather : temperatureScale
+Weather : city
+Weather : date
+Weather : predictions
+
+class Prediction
+Prediction : time
+Prediction : value
+
+class WeatherFactory
+WeatherFactory : make()
+
+WeatherFactory --> Weather
+
+class PredictionFactory
+PredictionFactory : make()
+
+PredictionFactory --> Prediction
+
+@enduml
